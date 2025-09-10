@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/oj/.nvm/versions/node/v20.14.0/bin/node mcp-client.js)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
