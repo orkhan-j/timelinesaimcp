@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.traefik.address=:8080"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@timelinesaitech.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - mcp
+    restart: unless-stopped
+
+  posthog-official-mcp:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./posthog-official-server.js:/app/server.js
+    command: ["node", "server.js"]
+    environment:
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - POSTHOG_PROJECT_ID=${POSTHOG_PROJECT_ID}
+      - POSTHOG_BASE_URL=${POSTHOG_BASE_URL}
+      - PORT=8082
+    networks:
+      - mcp
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.posthog.rule=Host("mcp.timelinesaitech.com") && PathPrefix("/posthog")
+      - traefik.http.routers.posthog.entrypoints=websecure
+      - traefik.http.routers.posthog.tls.certresolver=letsencrypt
+      - traefik.http.services.posthog.loadbalancer.server.port=8082
+
+  mcp-gateway:
+    image: docker/mcp-gateway:latest
+    container_name: mcp-gateway
+    environment:
+      - MCP_SERVER_URL=http://posthog-official-mcp:8082
+    networks:
+      - mcp
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gateway.rule=Host("mcp.timelinesaitech.com") && PathPrefix("/gateway")
+      - traefik.http.routers.gateway.entrypoints=websecure
+      - traefik.http.routers.gateway.tls.certresolver=letsencrypt
+      - traefik.http.services.gateway.loadbalancer.server.port=8080
+
+networks:
+  mcp:
+    driver: bridge

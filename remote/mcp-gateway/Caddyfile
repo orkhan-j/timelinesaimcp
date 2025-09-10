@@ -1,0 +1,28 @@
+{
+  email admin@example.com
+  local_certs
+}
+
+# HTTPS endpoint for PostHog MCP
+213.182.213.232 {
+  encode zstd gzip
+  log
+
+  # PostHog MCP endpoint
+  handle /mcp* {
+    reverse_proxy posthog-mcp:8081
+  }
+
+  # Health check
+  handle /health {
+    reverse_proxy posthog-mcp:8081
+  }
+
+  # MCP Gateway (Stripe) 
+  handle /gateway* {
+    reverse_proxy mcp-gateway:8080
+  }
+
+  # Default response
+  respond "MCP Services Available" 200
+}
