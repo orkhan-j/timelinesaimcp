@@ -1,0 +1,30 @@
+{
+  "name": "@timelinesai/mcp-servers",
+  "version": "1.0.0",
+  "description": "Timelines AI MCP Servers - Local Model Context Protocol integrations",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Local MCP servers are running on your server'",
+    "status": "echo 'Check server status at: https://mcp.timelinesaitech.com/health'",
+    "test": "curl -k https://mcp.timelinesaitech.com/health"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "claude",
+    "analytics",
+    "integrations",
+    "posthog"
+  ],
+  "author": "Timelines AI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orkhan-j/timelinesaimcp.git"
+  },
+  "dependencies": {
+    "eventsource": "^4.0.0",
+    "node-fetch": "^2.7.0"
+  }
+}

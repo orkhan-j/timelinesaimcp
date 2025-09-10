@@ -10,16 +10,10 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-.dev.vars
 
 # Build outputs
 dist/
 build/
-.output/
-
-# Wrangler
-.wrangler/
-wrangler.toml.bak
 
 # IDE
 .vscode/
@@ -55,9 +49,6 @@ temp/
 # Optional npm cache directory
 .npm
 
-# ESLint cache
-.eslintcache
-
 # Optional REPL history
 .node_repl_history
 
@@ -66,3 +57,6 @@ temp/
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Local server files
+remote/

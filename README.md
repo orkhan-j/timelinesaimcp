@@ -1,185 +1,142 @@
 # Timelines AI MCP Servers
 
-🚀 **Production-ready Model Context Protocol (MCP) servers** deployed on Cloudflare Workers with **PostHog analytics** and timeline management tools.
+Local Model Context Protocol (MCP) servers for Timelines AI, running on your own infrastructure.
 
-## 🌟 Features
+## 🚀 Current MCP Servers
 
-### 📦 **Basic MCP Server** (Public Access)
-- **Math Tools**: Add and multiply numbers with emoji feedback
-- **Timeline Creation**: Create formatted timelines with events and categories
-- **Time Functions**: Get current time in any timezone
-- **PostHog Integration**: Analytics queries and event tracking
-- **No Authentication**: Instant access for anyone
+### PostHog Analytics MCP
+- **Domain**: `mcp.timelinesaitech.com`
+- **Status**: ✅ Running
+- **Features**: Feature flags, insights, experiments, dashboards
+- **Endpoint**: `https://mcp.timelinesaitech.com/sse`
 
-### 🔐 **Authenticated MCP Server** (GitHub OAuth)
-- **All Basic Tools**: Enhanced with user context
-- **PostHog Analytics**: Feature flags, dashboards, user insights, A/B testing
-- **Project Management**: Advanced project timelines with milestones and dependencies
-- **Timeline Analytics**: Gap analysis, trends, critical path, resource allocation
-- **User Management**: GitHub OAuth with JWT tokens and permissions
-- **Private Timelines**: User-specific private timeline creation
+## 🛠️ Server Infrastructure
 
-## 🚀 Live Servers
+- **Server**: Ubuntu 22.04 LTS
+- **IP**: 213.182.213.232
+- **Reverse Proxy**: Traefik v3.0
+- **SSL**: Self-signed certificates
+- **Containerization**: Docker Compose
 
-### ✅ Deployed and Working
-- **Basic Server**: `https://timelines-mcp-basic.timelinesaimcp.workers.dev/sse`
-- **Auth Server**: `https://timelines-mcp-auth.timelinesaimcp.workers.dev/sse`
-- **Health Checks**: Add `/health` to any URL
-- **Server Info**: Visit root URL for tool listings
+## 📋 Prerequisites
 
-### 🧪 Quick Test
+- Docker and Docker Compose
+- Node.js 18+
+- Domain pointing to server IP
+- PostHog API credentials
+
+## 🚀 Quick Start
+
+### 1. Server Setup
 ```bash
-# Test with MCP Inspector
-npx @modelcontextprotocol/inspector@latest
-# Connect to: https://timelines-mcp-basic.timelinesaimcp.workers.dev/sse
+# SSH to server
+ssh root@213.182.213.232
 
-# Or test API directly
-curl -X POST "https://timelines-mcp-basic.timelinesaimcp.workers.dev/sse" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}'
+# Navigate to MCP gateway
+cd /opt/mcp-gateway
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs posthog-mcp
 ```
 
-## 🛠️ Available Tools
+### 2. Claude Desktop Configuration
+Add to your `claude_desktop_config.json`:
 
-| Tool | Basic | Auth | Description |
-|------|:-----:|:----:|-------------|
-| `add(a, b)` | ✅ | ✅ | Add two numbers |
-| `multiply(a, b)` | ✅ | ✅ | Multiply two numbers |
-| `create_timeline(title, events[])` | ✅ | ✅ | Create timelines |
-| `get_current_time(timezone?)` | ✅ | ✅ | Get current time |
-| `posthog_query(query)` | ✅ | ✅ | Query PostHog analytics |
-| `posthog_events(filters)` | ✅ | ✅ | Get PostHog events |
-| `get_user_info()` | ❌ | ✅ | Get authenticated user info |
-| `create_project_timeline(...)` | ❌ | ✅ | Project management timelines |
-| `analyze_timeline(data, type)` | ❌ | ✅ | Timeline analytics |
-| `posthog_feature_flags()` | ❌ | ✅ | Manage PostHog feature flags |
-| `posthog_insights(params)` | ❌ | ✅ | Advanced PostHog insights |
-
-**Total**: 6 public tools + 5 authenticated tools = **11 tools**
-
-## 📱 Integration
-
-### Claude Desktop Configuration
 ```json
 {
   "mcpServers": {
-    "timelines-basic": {
-      "command": "npx",
+    "posthog-mcp-timelines": {
+      "command": "/Users/oj/.nvm/versions/node/v20.14.0/bin/npx",
       "args": [
-        "mcp-remote",
-        "https://timelines-mcp-basic.timelinesaimcp.workers.dev/sse"
-      ]
-    },
-    "timelines-auth": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "https://timelines-mcp-auth.timelinesaimcp.workers.dev/sse"
+        "--yes",
+        "mcp-remote@latest",
+        "https://mcp.timelinesaitech.com/sse"
       ]
     }
   }
 }
 ```
 
-### API Usage Example
+### 3. Test Connection
 ```bash
-# Create a timeline
-curl -X POST "https://timelines-mcp-basic.timelinesaimcp.workers.dev/sse" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "tools/call",
-    "params": {
-      "name": "create_timeline",
-      "arguments": {
-        "title": "Product Launch",
-        "events": [
-          {"date": "2024-01-15", "title": "Planning Phase"},
-          {"date": "2024-03-01", "title": "Development Start"},
-          {"date": "2024-06-01", "title": "Beta Release"},
-          {"date": "2024-09-01", "title": "Public Launch"}
-        ]
-      }
-    }
-  }'
+# Health check
+curl -k https://mcp.timelinesaitech.com/health
+
+# Test MCP tools
+curl -k -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+  https://mcp.timelinesaitech.com/
 ```
 
-## 🔒 Authentication (Optional)
+## 🔧 Available Tools
 
-For enhanced features on the authenticated server:
+- `feature-flag-get-all` - Get all feature flags
+- `create-feature-flag` - Create new feature flags
+- `insights-get-all` - Get project insights
+- `experiment-get-all` - Get experiments
+- `dashboards-get-all` - Get dashboards
+- `get-sql-insight` - Query data (placeholder)
 
-1. **Visit**: `https://timelines-mcp-auth.timelinesaimcp.workers.dev/authorize`
-2. **Login**: with your GitHub account
-3. **Get Token**: Copy JWT token from success page
-4. **Use Token**: Add `?token=YOUR_TOKEN` or `Authorization: Bearer YOUR_TOKEN`
+## 🐛 Troubleshooting
 
-## 🏗️ Development
+### Common Issues
 
-### Project Structure
-```
-.
-├── timelines-mcp-basic/     # Public MCP server
-├── timelines-mcp-auth/      # Authenticated MCP server
-├── deploy.sh               # Deployment automation
-├── SETUP_GUIDE.md         # Complete setup instructions
-└── README.md              # This file
-```
+1. **SSL Certificate Errors**
+   - Use `-k` flag with curl for testing
+   - Configure proper SSL certificates in production
 
-### Local Development
+2. **API Authentication Errors**
+   - Verify PostHog API key permissions
+   - Check project ID is correct
+
+3. **Connection Timeouts**
+   - Verify domain DNS resolution
+   - Check server firewall settings
+
+### Logs
 ```bash
-# Clone the repository
-git clone https://github.com/orkhan-j/timelinesaimcp.git
-cd timelinesaimcp
+# PostHog MCP logs
+docker logs mcp-gateway-posthog-mcp-1
 
-# Install dependencies for basic server
-cd timelines-mcp-basic
-npm install
-npm run dev
-
-# Install dependencies for auth server
-cd ../timelines-mcp-auth
-npm install
-npm run dev
+# Traefik logs
+docker logs mcp-gateway-traefik-1
 ```
 
-### Deployment
+## 🔒 Security
+
+- API keys stored in environment variables
+- CORS enabled for MCP clients
+- Reverse proxy with SSL termination
+- Containerized services
+
+## 📝 Environment Variables
+
 ```bash
-# Deploy both servers
-./deploy.sh
-
-# Or deploy individually
-cd timelines-mcp-basic && npx wrangler deploy
-cd timelines-mcp-auth && npx wrangler deploy
+POSTHOG_API_KEY=your_api_key_here
+POSTHOG_PROJECT_ID=your_project_id_here
+POSTHOG_BASE_URL=https://app.posthog.com
 ```
 
-## 📊 Performance
+## 🚀 Deployment
 
-- ⚡ **Response Time**: < 200ms globally
-- 🌍 **Global CDN**: Cloudflare Workers edge network
-- 📈 **Scalability**: 100,000+ requests/day
-- 🔄 **Uptime**: 99.9% SLA
-- 🔒 **Security**: HTTPS only, CORS enabled
+The MCP servers are automatically deployed using Docker Compose:
 
-## 📚 Documentation
+```bash
+cd /opt/mcp-gateway
+docker compose up -d
+```
 
-- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Complete deployment guide
-- **[DEPLOYMENT_SUCCESS.md](DEPLOYMENT_SUCCESS.md)** - Test results and URLs
-- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Detailed technical overview
-- **[claude.md](claude.md)** - Claude Desktop integration guide
+## 📞 Support
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test locally and in production
-5. Submit a pull request
-
-## 📄 License
-
-MIT License - see LICENSE file for details
+For issues or questions:
+1. Check server logs
+2. Verify domain configuration
+3. Test endpoints manually
+4. Check PostHog API credentials
 
 ---
 
-**🎯 Ready to use?** Start with the [Quick Test](#-quick-test) above or check the [SETUP_GUIDE.md](SETUP_GUIDE.md) for custom domain setup.
+**Note**: This setup uses your own server infrastructure instead of Cloudflare Workers for better control and customization.
