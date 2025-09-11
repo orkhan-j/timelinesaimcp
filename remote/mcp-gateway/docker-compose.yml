@@ -47,6 +47,29 @@ services:
       - traefik.http.routers.posthog.tls.certresolver=letsencrypt
       - traefik.http.services.posthog.loadbalancer.server.port=8082
 
+  google-ads-mcp:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./google-ads-server.js:/app/server.js
+    command: ["node", "server.js"]
+    environment:
+      - GOOGLE_ADS_CLIENT_ID=${GOOGLE_ADS_CLIENT_ID}
+      - GOOGLE_ADS_CLIENT_SECRET=${GOOGLE_ADS_CLIENT_SECRET}
+      - GOOGLE_ADS_REFRESH_TOKEN=${GOOGLE_ADS_REFRESH_TOKEN}
+      - GOOGLE_ADS_DEVELOPER_TOKEN=${GOOGLE_ADS_DEVELOPER_TOKEN}
+      - GOOGLE_ADS_CUSTOMER_ID=${GOOGLE_ADS_CUSTOMER_ID}
+      - PORT=8083
+    networks:
+      - mcp
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.googleads.rule=Host("mcp.timelinesaitech.com") && PathPrefix("/google-ads")
+      - traefik.http.routers.googleads.entrypoints=websecure
+      - traefik.http.routers.googleads.tls.certresolver=letsencrypt
+      - traefik.http.services.googleads.loadbalancer.server.port=8083
+
   mcp-gateway:
     image: docker/mcp-gateway:latest
     container_name: mcp-gateway
