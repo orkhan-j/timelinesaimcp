@@ -760,6 +760,7 @@ const server = http.createServer(async (req, res) => {
           // For notifications, just acknowledge with 200 OK
           res.writeHead(200);
           res.end();
+        }
       } catch (error) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Invalid JSON" }));
@@ -790,6 +791,7 @@ const server = http.createServer(async (req, res) => {
           // For notifications, just acknowledge with 200 OK
           res.writeHead(200);
           res.end();
+        }
       } catch (error) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Invalid JSON" }));
