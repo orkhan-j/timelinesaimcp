@@ -1,17 +1,19 @@
-# PostHog MCP Server for Timelines AI
+# MCP Servers for Timelines AI
 
-A Model Context Protocol (MCP) server that enables Claude Desktop to interact with PostHog analytics platform.
+Model Context Protocol (MCP) servers that enable Claude Desktop to interact with PostHog analytics and Google Ads platforms.
 
 ## 🚀 Quick Setup for Team Members
 
-### Step 1: Get the Local Proxy
+### Step 1: Get the Local Proxies
 
 ```bash
-# Download the proxy file to your home directory
+# Download PostHog proxy
 curl -o ~/posthog-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/posthog-local-proxy.js
-
-# Make it executable
 chmod +x ~/posthog-local-proxy.js
+
+# Download Google Ads proxy
+curl -o ~/googleads-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/googleads-local-proxy.js
+chmod +x ~/googleads-local-proxy.js
 ```
 
 ### Step 2: Configure Claude Desktop
@@ -28,6 +30,10 @@ Add this to your Claude Desktop config file:
     "posthog": {
       "command": "node",
       "args": ["~/posthog-local-proxy.js"]
+    },
+    "googleads": {
+      "command": "node",
+      "args": ["~/googleads-local-proxy.js"]
     }
   }
 }
@@ -35,17 +41,27 @@ Add this to your Claude Desktop config file:
 
 ### Step 3: Restart Claude Desktop
 
-Completely quit and restart Claude Desktop. You should now see PostHog tools available!
+Completely quit and restart Claude Desktop. You should now see both PostHog and Google Ads tools available!
 
-## ✅ Available PostHog Tools
+## ✅ Available Tools
 
-Once connected, you can use these tools in Claude:
-
+### PostHog Tools
 - **dashboards-get-all** - Get all dashboards for the project
 - **dashboard-create** - Create a new dashboard
 - **insights-get-all** - Get all insights
 - **feature-flag-get-all** - Get all feature flags  
 - **get-sql-insight** - Query project data using natural language
+
+### Google Ads Tools
+- **campaigns-list** - List all campaigns in the account
+- **campaign-create** - Create a new campaign
+- **campaign-pause** - Pause a campaign
+- **campaign-enable** - Enable a paused campaign
+- **ad-groups-list** - List ad groups in a campaign
+- **keywords-list** - List keywords in an ad group
+- **keyword-add** - Add keywords to an ad group
+- **performance-report** - Get performance metrics
+- **account-info** - Get Google Ads account information
 
 ## 🏗️ How It Works
 
@@ -123,10 +139,12 @@ curl -X POST https://mcp.timelinesaitech.com/ \
 
 ```
 /
-├── posthog-local-proxy.js          # Local proxy (REQUIRED for Claude Desktop)
+├── posthog-local-proxy.js          # PostHog local proxy for Claude Desktop
+├── googleads-local-proxy.js        # Google Ads local proxy for Claude Desktop
 ├── deploy.sh                        # Deployment script
 ├── remote/mcp-gateway/
-│   ├── posthog-official-server.js  # Main server code
+│   ├── posthog-official-server.js  # PostHog server code
+│   ├── googleads-official-server.js # Google Ads server code
 │   ├── docker-compose.yml          # Docker configuration
 │   └── nginx.conf                  # Nginx configuration
 ├── README.md                        # This file
@@ -135,9 +153,10 @@ curl -X POST https://mcp.timelinesaitech.com/ \
 
 ## 🔒 Security
 
-- PostHog API keys stored on server only (not local)
+- API keys stored on server only (not local)
 - All communication uses HTTPS
-- Local proxy has no credentials
+- Local proxies have no credentials
+- Each service runs in isolated Docker container
 
 ## 📞 Support
 
@@ -147,6 +166,6 @@ curl -X POST https://mcp.timelinesaitech.com/ \
 
 ---
 
-**Current Configuration:**
-- PostHog Project: 60109 (EU region)
-- API Endpoint: https://eu.posthog.com
+**Current Services:**
+- **PostHog**: Project 60109 (EU region) - https://eu.posthog.com
+- **Google Ads**: Requires configuration with customer ID and credentials
