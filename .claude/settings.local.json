@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(/Users/oj/.nvm/versions/node/v20.14.0/bin/node mcp-client.js)"
+      "Bash(/Users/oj/.nvm/versions/node/v20.14.0/bin/node mcp-client.js)",
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

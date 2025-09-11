@@ -691,7 +691,7 @@ const server = http.createServer(async (req, res) => {
     
     // Send the endpoint information
     const sessionId = Date.now();
-    res.write(`event: endpoint\ndata: https://mcp.timelinesaitech.com/posthog/sse/message?sessionId=${sessionId}\n\n`);
+    res.write(`event: endpoint\ndata: https://mcp.timelinesaitech.com/sse/message?sessionId=${sessionId}\n\n`);
     
     // Keep connection alive
     const interval = setInterval(() => {
@@ -702,6 +702,30 @@ const server = http.createServer(async (req, res) => {
       clearInterval(interval);
     });
     
+    return;
+  }
+  
+  // SSE message endpoint for MCP
+  if (path === "/sse/message") {
+    if (req.method !== "POST") {
+      res.writeHead(405, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
+    }
+    
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", async () => {
+      try {
+        const request = JSON.parse(body);
+        const response = await handleJsonRpc(request);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(response));
+      } catch (error) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Invalid JSON" }));
+      }
+    });
     return;
   }
   
