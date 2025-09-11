@@ -1,142 +1,152 @@
-# Timelines AI MCP Servers
+# PostHog MCP Server for Timelines AI
 
-Local Model Context Protocol (MCP) servers for Timelines AI, running on your own infrastructure.
+A Model Context Protocol (MCP) server that enables Claude Desktop to interact with PostHog analytics platform.
 
-## 🚀 Current MCP Servers
+## 🚀 Quick Setup for Team Members
 
-### PostHog Analytics MCP
-- **Domain**: `mcp.timelinesaitech.com`
-- **Status**: ✅ Running
-- **Features**: Feature flags, insights, experiments, dashboards
-- **Endpoint**: `https://mcp.timelinesaitech.com/sse`
+### Step 1: Get the Local Proxy
 
-## 🛠️ Server Infrastructure
-
-- **Server**: Ubuntu 22.04 LTS
-- **IP**: 213.182.213.232
-- **Reverse Proxy**: Traefik v3.0
-- **SSL**: Self-signed certificates
-- **Containerization**: Docker Compose
-
-## 📋 Prerequisites
-
-- Docker and Docker Compose
-- Node.js 18+
-- Domain pointing to server IP
-- PostHog API credentials
-
-## 🚀 Quick Start
-
-### 1. Server Setup
 ```bash
-# SSH to server
-ssh root@213.182.213.232
+# Download the proxy file to your home directory
+curl -o ~/posthog-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/posthog-local-proxy.js
 
-# Navigate to MCP gateway
-cd /opt/mcp-gateway
-
-# Check status
-docker compose ps
-
-# View logs
-docker compose logs posthog-mcp
+# Make it executable
+chmod +x ~/posthog-local-proxy.js
 ```
 
-### 2. Claude Desktop Configuration
-Add to your `claude_desktop_config.json`:
+### Step 2: Configure Claude Desktop
+
+Add this to your Claude Desktop config file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`  
+**Linux:** `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
-    "posthog-mcp-timelines": {
-      "command": "/Users/oj/.nvm/versions/node/v20.14.0/bin/npx",
-      "args": [
-        "--yes",
-        "mcp-remote@latest",
-        "https://mcp.timelinesaitech.com/sse"
-      ]
+    "posthog": {
+      "command": "node",
+      "args": ["~/posthog-local-proxy.js"]
     }
   }
 }
 ```
 
-### 3. Test Connection
-```bash
-# Health check
-curl -k https://mcp.timelinesaitech.com/health
+### Step 3: Restart Claude Desktop
 
-# Test MCP tools
-curl -k -H 'content-type: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
-  https://mcp.timelinesaitech.com/
+Completely quit and restart Claude Desktop. You should now see PostHog tools available!
+
+## ✅ Available PostHog Tools
+
+Once connected, you can use these tools in Claude:
+
+- **dashboards-get-all** - Get all dashboards for the project
+- **dashboard-create** - Create a new dashboard
+- **insights-get-all** - Get all insights
+- **feature-flag-get-all** - Get all feature flags  
+- **get-sql-insight** - Query project data using natural language
+
+## 🏗️ How It Works
+
 ```
-
-## 🔧 Available Tools
-
-- `feature-flag-get-all` - Get all feature flags
-- `create-feature-flag` - Create new feature flags
-- `insights-get-all` - Get project insights
-- `experiment-get-all` - Get experiments
-- `dashboards-get-all` - Get dashboards
-- `get-sql-insight` - Query data (placeholder)
+Your Computer                    Remote Server
+┌─────────────┐                 ┌──────────────────┐
+│   Claude    │                 │                  │
+│   Desktop   │                 │  213.182.213.232 │
+│      ↓      │                 │                  │
+│ Local Proxy │ ───── HTTPS ───→│  nginx → Docker  │
+│  (Node.js)  │                 │   PostHog MCP    │
+└─────────────┘                 └──────────────────┘
+```
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Tools don't appear in Claude Desktop
+1. Make sure Node.js is installed: `node --version`
+2. Verify the proxy file exists: `ls ~/posthog-local-proxy.js`
+3. Check the config file syntax is valid JSON
+4. Completely restart Claude Desktop (quit from menu, not just close window)
 
-1. **SSL Certificate Errors**
-   - Use `-k` flag with curl for testing
-   - Configure proper SSL certificates in production
+### Connection errors
+1. Test server is running: `curl https://mcp.timelinesaitech.com/`
+2. Check your internet connection
+3. Contact admin if persistent issues
 
-2. **API Authentication Errors**
-   - Verify PostHog API key permissions
-   - Check project ID is correct
+## 🔧 For Administrators
 
-3. **Connection Timeouts**
-   - Verify domain DNS resolution
-   - Check server firewall settings
+### Server Management
 
-### Logs
+**Server:** mcp.timelinesaitech.com (213.182.213.232)
+
+### Deployment (Always Use Script!)
+
 ```bash
-# PostHog MCP logs
-docker logs mcp-gateway-posthog-mcp-1
+cd /path/to/project
+./deploy.sh
+```
 
-# Traefik logs
-docker logs mcp-gateway-traefik-1
+### Manual Deployment (Emergency Only)
+
+```bash
+# Local: Commit and push
+git add .
+git commit -m "Your changes"
+git push origin main
+
+# Server: Pull and sync
+ssh root@213.182.213.232
+cd /opt/mcp-gateway
+git pull origin main
+
+# CRITICAL: Sync files to Docker mount points
+cp remote/mcp-gateway/posthog-official-server.js posthog-official-server.js
+cp remote/mcp-gateway/nginx.conf nginx.conf
+
+# Restart
+docker-compose down && docker-compose up -d
+```
+
+### Monitoring
+
+```bash
+# Check logs
+ssh root@213.182.213.232 "docker logs posthog-mcp --tail 50"
+
+# Test server
+curl -X POST https://mcp.timelinesaitech.com/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"ping","id":1}'
+```
+
+## 📁 Project Structure
+
+```
+/
+├── posthog-local-proxy.js          # Local proxy (REQUIRED for Claude Desktop)
+├── deploy.sh                        # Deployment script
+├── remote/mcp-gateway/
+│   ├── posthog-official-server.js  # Main server code
+│   ├── docker-compose.yml          # Docker configuration
+│   └── nginx.conf                  # Nginx configuration
+├── README.md                        # This file
+└── CLAUDE.md                        # Development instructions
 ```
 
 ## 🔒 Security
 
-- API keys stored in environment variables
-- CORS enabled for MCP clients
-- Reverse proxy with SSL termination
-- Containerized services
-
-## 📝 Environment Variables
-
-```bash
-POSTHOG_API_KEY=your_api_key_here
-POSTHOG_PROJECT_ID=your_project_id_here
-POSTHOG_BASE_URL=https://app.posthog.com
-```
-
-## 🚀 Deployment
-
-The MCP servers are automatically deployed using Docker Compose:
-
-```bash
-cd /opt/mcp-gateway
-docker compose up -d
-```
+- PostHog API keys stored on server only (not local)
+- All communication uses HTTPS
+- Local proxy has no credentials
 
 ## 📞 Support
 
-For issues or questions:
-1. Check server logs
-2. Verify domain configuration
-3. Test endpoints manually
-4. Check PostHog API credentials
+**Issues?** Check logs or contact admin team.
+
+**Server Status:** https://mcp.timelinesaitech.com/
 
 ---
 
-**Note**: This setup uses your own server infrastructure instead of Cloudflare Workers for better control and customization.
+**Current Configuration:**
+- PostHog Project: 60109 (EU region)
+- API Endpoint: https://eu.posthog.com
