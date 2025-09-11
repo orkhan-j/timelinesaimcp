@@ -32,24 +32,33 @@ Always work in: `/Users/oj/Downloads/Timelines MCP/remote/mcp-gateway/`
 
 ### 2. DEPLOYMENT PROCESS (ALWAYS USE GIT)
 
-**Step 1: Commit changes locally**
+**IMPORTANT: Use the deployment script to avoid file sync issues!**
+
+**Automated deployment (RECOMMENDED):**
 ```bash
 cd /Users/oj/Downloads/Timelines\ MCP/
+./deploy.sh
+```
+
+**Manual deployment (if needed):**
+```bash
+# Step 1: Commit and push locally
+cd /Users/oj/Downloads/Timelines\ MCP/
 git add .
-git commit -m "Fix: SSE endpoint returns full URL"
+git commit -m "Your commit message"
 git push origin main
-```
 
-**Step 2: Deploy to server**
-```bash
-ssh root@213.182.213.232 "cd /opt/mcp-gateway && ./deploy.sh"
-```
-
-**OR manually:**
-```bash
+# Step 2: Deploy on server
 ssh root@213.182.213.232
 cd /opt/mcp-gateway
 git pull origin main
+
+# CRITICAL: Sync files from git structure to Docker mount points
+cp remote/mcp-gateway/posthog-official-server.js posthog-official-server.js
+cp remote/mcp-gateway/nginx.conf nginx.conf
+cp remote/mcp-gateway/docker-compose.yml docker-compose.yml
+
+# Restart containers
 docker-compose down
 docker-compose up -d
 ```

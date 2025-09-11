@@ -614,6 +614,9 @@ async function handleJsonRpc(request) {
   try {
     const { method, params, id } = request;
     
+    // Log incoming requests for debugging
+    console.error(`DEBUG - Received request: method=${method}, id=${id}`);
+    
     if (method === "initialize") {
       return {
         jsonrpc: "2.0",
