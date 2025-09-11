@@ -691,7 +691,7 @@ const server = http.createServer(async (req, res) => {
     
     // Send the endpoint information
     const sessionId = Date.now();
-    res.write(`event: endpoint\ndata: https://mcp.timelinesaitech.com/sse/message?sessionId=${sessionId}\n\n`);
+    res.write(`event: endpoint\ndata: /sse/message?sessionId=${sessionId}\n\n`);
     
     // Keep connection alive
     const interval = setInterval(() => {
