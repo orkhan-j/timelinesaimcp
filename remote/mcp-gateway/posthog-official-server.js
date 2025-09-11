@@ -614,6 +614,18 @@ async function handleJsonRpc(request) {
   try {
     const { method, params, id } = request;
     
+    if (method === "initialize") {
+      return {
+        jsonrpc: "2.0",
+        id,
+        result: {
+          protocolVersion: params?.protocolVersion || "2024-11-05",
+          capabilities: { tools: { listChanged: false } },
+          serverInfo: { name: "posthog-mcp", version: "1.0.0" },
+        },
+      };
+    }
+
     if (method === "ping") {
       return { jsonrpc: "2.0", id, result: {} };
     }

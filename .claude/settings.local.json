@@ -11,7 +11,9 @@
       "WebSearch",
       "Bash(timeout 3 curl -N -H \"Accept: text/event-stream\" https://mcp.timelinesaitech.com/sse)",
       "Read(//Users/oj/Downloads/**)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Read(//Users/oj/Library/Application Support/Claude/**)",
+      "Bash(/Users/oj/.nvm/versions/node/v20.14.0/bin/npx --yes mcp-remote@latest https://mcp.timelinesaitech.com/sse)"
     ],
     "deny": [],
     "ask": []
