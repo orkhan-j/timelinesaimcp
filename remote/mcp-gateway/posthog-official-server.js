@@ -689,9 +689,15 @@ const server = http.createServer(async (req, res) => {
       "Connection": "keep-alive",
     });
     
-    // Send the endpoint information
+    // Construct the full URL for the endpoint
+    const protoHeader = req.headers["x-forwarded-proto"] || "https";
+    const scheme = Array.isArray(protoHeader) ? protoHeader[0] : protoHeader;
+    const host = req.headers["x-forwarded-host"] || req.headers.host || "mcp.timelinesaitech.com";
+    const baseUrl = `${scheme}://${host}`;
+    
+    // Send the endpoint information with full URL
     const sessionId = Date.now();
-    res.write(`event: endpoint\ndata: /sse/message?sessionId=${sessionId}\n\n`);
+    res.write(`event: endpoint\ndata: ${baseUrl}/sse/message?sessionId=${sessionId}\n\n`);
     
     // Keep connection alive
     const interval = setInterval(() => {
