@@ -614,8 +614,6 @@ async function handleJsonRpc(request) {
   try {
     const { method, params, id } = request;
     
-    // Log incoming requests for debugging
-    console.error(`DEBUG - Received request: method=${method}, id=${id}`);
     
     if (method === "initialize") {
       return {
@@ -624,20 +622,18 @@ async function handleJsonRpc(request) {
         result: {
           protocolVersion: params?.protocolVersion || "2024-11-05",
           capabilities: { 
-            tools: { listChanged: false }
+            tools: {}
           },
           serverInfo: { 
             name: "posthog-mcp", 
             version: "1.0.0" 
-          },
-          tools: MCP_TOOLS
+          }
         },
       };
     }
 
     if (method === "notifications/initialized") {
       // This is a notification, not a request - no response needed
-      console.error("DEBUG - Client initialized notification received");
       return null; // Don't send a response for notifications
     }
     
