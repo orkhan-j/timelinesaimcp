@@ -13,7 +13,8 @@
       "Read(//Users/oj/Downloads/**)",
       "Bash(cd:*)",
       "Read(//Users/oj/Library/Application Support/Claude/**)",
-      "Bash(/Users/oj/.nvm/versions/node/v20.14.0/bin/npx --yes mcp-remote@latest https://mcp.timelinesaitech.com/sse)"
+      "Bash(/Users/oj/.nvm/versions/node/v20.14.0/bin/npx --yes mcp-remote@latest https://mcp.timelinesaitech.com/sse)",
+      "Bash(npx:*)"
     ],
     "deny": [],
     "ask": []

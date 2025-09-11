@@ -620,8 +620,14 @@ async function handleJsonRpc(request) {
         id,
         result: {
           protocolVersion: params?.protocolVersion || "2024-11-05",
-          capabilities: { tools: { listChanged: false } },
-          serverInfo: { name: "posthog-mcp", version: "1.0.0" },
+          capabilities: { 
+            tools: { listChanged: false }
+          },
+          serverInfo: { 
+            name: "posthog-mcp", 
+            version: "1.0.0" 
+          },
+          tools: MCP_TOOLS
         },
       };
     }
