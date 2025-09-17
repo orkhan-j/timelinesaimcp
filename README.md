@@ -1,171 +1,171 @@
-# MCP Servers for Timelines AI
+# 🚀 Timelines AI MCP Services
 
-Model Context Protocol (MCP) servers that enable Claude Desktop to interact with PostHog analytics and Google Ads platforms.
+Connect Claude Desktop to PostHog analytics and Google Ads through the Model Context Protocol (MCP).
 
-## 🚀 Quick Setup for Team Members
+## ✨ What This Does
 
-### Step 1: Get the Local Proxies
+This enables Claude Desktop to:
+- **PostHog**: Access analytics, events, user data, feature flags, and run queries
+- **Google Ads**: Manage campaigns, view performance, control keywords and budgets
+
+## 🎯 Quick Setup (For Users)
+
+### Option 1: Clone Repository (Recommended)
 
 ```bash
-# Download PostHog proxy
-curl -o ~/posthog-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/posthog-local-proxy.js
-chmod +x ~/posthog-local-proxy.js
+# 1. Clone the repository
+git clone https://github.com/orkhan-j/timelinesaimcp.git
+cd timelinesaimcp
 
-# Download Google Ads proxy
-curl -o ~/googleads-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/googleads-local-proxy.js
-chmod +x ~/googleads-local-proxy.js
+# 2. Get the full path to the directory
+pwd  # Copy this path, you'll need it next
 ```
 
-### Step 2: Configure Claude Desktop
+### Option 2: Download Files Only
 
-Add this to your Claude Desktop config file:
+```bash
+# Download just the proxy files
+curl -o ~/posthog-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/posthog-local-proxy.js
+curl -o ~/googleads-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/googleads-local-proxy.js
+```
 
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`  
-**Linux:** `~/.config/Claude/claude_desktop_config.json`
+### Configure Claude Desktop
+
+Find your Claude Desktop config file:
+- **Mac**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+Add this configuration (replace `/path/to/` with your actual path):
 
 ```json
 {
   "mcpServers": {
     "posthog": {
       "command": "node",
-      "args": ["~/posthog-local-proxy.js"]
+      "args": ["/path/to/timelinesaimcp/posthog-local-proxy.js"]
     },
     "googleads": {
       "command": "node",
-      "args": ["~/googleads-local-proxy.js"]
+      "args": ["/path/to/timelinesaimcp/googleads-local-proxy.js"]
     }
   }
 }
 ```
 
-### Step 3: Restart Claude Desktop
-
-Completely quit and restart Claude Desktop. You should now see both PostHog and Google Ads tools available!
-
-## ✅ Available Tools
-
-### PostHog Tools
-- **dashboards-get-all** - Get all dashboards for the project
-- **dashboard-create** - Create a new dashboard
-- **insights-get-all** - Get all insights
-- **feature-flag-get-all** - Get all feature flags  
-- **get-sql-insight** - Query project data using natural language
-
-### Google Ads Tools
-- **campaigns-list** - List all campaigns in the account
-- **campaign-create** - Create a new campaign
-- **campaign-pause** - Pause a campaign
-- **campaign-enable** - Enable a paused campaign
-- **ad-groups-list** - List ad groups in a campaign
-- **keywords-list** - List keywords in an ad group
-- **keyword-add** - Add keywords to an ad group
-- **performance-report** - Get performance metrics
-- **account-info** - Get Google Ads account information
-
-## 🏗️ How It Works
-
-```
-Your Computer                    Remote Server
-┌─────────────┐                 ┌──────────────────┐
-│   Claude    │                 │                  │
-│   Desktop   │                 │  213.182.213.232 │
-│      ↓      │                 │                  │
-│ Local Proxy │ ───── HTTPS ───→│  nginx → Docker  │
-│  (Node.js)  │                 │   PostHog MCP    │
-└─────────────┘                 └──────────────────┘
+**Example for Mac users who cloned to home directory:**
+```json
+{
+  "mcpServers": {
+    "posthog": {
+      "command": "node",
+      "args": ["/Users/yourname/timelinesaimcp/posthog-local-proxy.js"]
+    },
+    "googleads": {
+      "command": "node",
+      "args": ["/Users/yourname/timelinesaimcp/googleads-local-proxy.js"]
+    }
+  }
+}
 ```
 
-## 🐛 Troubleshooting
+### Restart Claude Desktop
 
-### Tools don't appear in Claude Desktop
-1. Make sure Node.js is installed: `node --version`
-2. Verify the proxy file exists: `ls ~/posthog-local-proxy.js`
-3. Check the config file syntax is valid JSON
-4. Completely restart Claude Desktop (quit from menu, not just close window)
+1. **Completely quit Claude Desktop** (not just close the window)
+2. **Reopen Claude Desktop**
+3. **Look for the 🔌 icon** in the text input area
+4. You should see "posthog" and "googleads" listed
 
-### Connection errors
-1. Test server is running: `curl https://mcp.timelinesaitech.com/`
-2. Check your internet connection
-3. Contact admin if persistent issues
+## 🎉 Test It Works!
 
-## 🔧 For Administrators
+Try these prompts in Claude:
 
-### Server Management
+### PostHog Examples:
+- "Show me recent events from PostHog"
+- "List all feature flags"
+- "Get dashboard metrics"
+- "Run a HogQL query to find top users"
 
-**Server:** mcp.timelinesaitech.com (213.182.213.232)
+### Google Ads Examples:
+- "List my Google Ads campaigns"
+- "Show campaign performance this week"
+- "Get my Google Ads account info"
+- "What keywords are in my campaigns?"
 
-### Deployment (Always Use Script!)
+## 📊 Available Tools
 
-```bash
-cd /path/to/project
-./deploy.sh
+### PostHog MCP (Analytics)
+| Tool | Description | Example Prompt |
+|------|-------------|----------------|
+| `events-search` | Search and filter events | "Find login events from today" |
+| `persons-list` | List users | "Show me recent user signups" |
+| `insights-list` | Get analytics | "What are our top insights?" |
+| `feature-flags-list` | Manage flags | "List active feature flags" |
+| `query-hogql` | Run HogQL queries | "Query users who signed up this week" |
+| `dashboards-list` | View dashboards | "Show me all dashboards" |
+
+### Google Ads MCP (Advertising)
+| Tool | Description | Example Prompt |
+|------|-------------|----------------|
+| `campaigns-list` | List campaigns | "Show all active campaigns" |
+| `performance-report` | Get metrics | "Campaign performance this month" |
+| `keywords-list` | View keywords | "What keywords are we bidding on?" |
+| `campaign-pause` | Pause campaigns | "Pause the Brand campaign" |
+| `account-info` | Account details | "Get my Google Ads account info" |
+
+## 🛠️ Troubleshooting
+
+### "MCP tools not showing in Claude"
+1. **Check Node.js is installed**: Run `node --version` in terminal
+2. **Verify file paths**: Make sure the paths in config.json are correct
+3. **Restart Claude completely**: Quit from menu, not just close window
+4. **Check JSON syntax**: Make sure config file is valid JSON
+
+### "Connection refused" errors
+1. Test server: `curl https://mcp.timelinesaitech.com/health`
+2. Check internet connection
+3. Try running proxy directly: `node /path/to/posthog-local-proxy.js`
+
+### Need Node.js?
+Download from https://nodejs.org/ (version 18 or higher)
+
+## 🏗️ Architecture
+
+```
+Your Computer                 Our Server (mcp.timelinesaitech.com)
+┌─────────────┐              ┌──────────────────────────┐
+│   Claude    │              │                          │
+│   Desktop   │              │  ┌──────────────────┐   │
+│      ↓      │              │  │   PostHog MCP    │   │
+│ Local Proxy │ ── HTTPS ──→ │  ├──────────────────┤   │
+│  (Node.js)  │              │  │ Google Ads MCP   │   │
+└─────────────┘              │  └──────────────────┘   │
+                             └──────────────────────────┘
 ```
 
-### Manual Deployment (Emergency Only)
+## 📚 Documentation
 
-```bash
-# Local: Commit and push
-git add .
-git commit -m "Your changes"
-git push origin main
+- **[CLIENT-SETUP.md](CLIENT-SETUP.md)** - Detailed setup guide
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical documentation
+- **[CLAUDE.md](CLAUDE.md)** - Server management (for admins)
 
-# Server: Pull and sync
-ssh root@213.182.213.232
-cd /opt/mcp-gateway
-git pull origin main
+## 🔐 Security
 
-# CRITICAL: Sync files to Docker mount points
-cp remote/mcp-gateway/posthog-official-server.js posthog-official-server.js
-cp remote/mcp-gateway/nginx.conf nginx.conf
+- ✅ No API keys stored on your computer
+- ✅ All connections use HTTPS encryption
+- ✅ Server handles all authentication
+- ✅ Read-only access by default
 
-# Restart
-docker-compose down && docker-compose up -d
-```
+## 🤝 Contributing
 
-### Monitoring
-
-```bash
-# Check logs
-ssh root@213.182.213.232 "docker logs posthog-mcp --tail 50"
-
-# Test server
-curl -X POST https://mcp.timelinesaitech.com/ \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"ping","id":1}'
-```
-
-## 📁 Project Structure
-
-```
-/
-├── posthog-local-proxy.js          # PostHog local proxy for Claude Desktop
-├── googleads-local-proxy.js        # Google Ads local proxy for Claude Desktop
-├── deploy.sh                        # Deployment script
-├── remote/mcp-gateway/
-│   ├── posthog-official-server.js  # PostHog server code
-│   ├── googleads-official-server.js # Google Ads server code
-│   ├── docker-compose.yml          # Docker configuration
-│   └── nginx.conf                  # Nginx configuration
-├── README.md                        # This file
-└── CLAUDE.md                        # Development instructions
-```
-
-## 🔒 Security
-
-- API keys stored on server only (not local)
-- All communication uses HTTPS
-- Local proxies have no credentials
-- Each service runs in isolated Docker container
+Want to add a new MCP service? See [ARCHITECTURE.md](ARCHITECTURE.md) for developer docs.
 
 ## 📞 Support
 
-**Issues?** Check logs or contact admin team.
-
-**Server Status:** https://mcp.timelinesaitech.com/
+- **Setup issues?** See troubleshooting above
+- **Server status:** https://mcp.timelinesaitech.com/health
+- **Contact:** Timelines AI team
 
 ---
 
-**Current Services:**
-- **PostHog**: Project 60109 (EU region) - https://eu.posthog.com
-- **Google Ads**: Requires configuration with customer ID and credentials
+**Built by [Timelines AI](https://timelinesai.com)** | Server Status: 🟢 Online
