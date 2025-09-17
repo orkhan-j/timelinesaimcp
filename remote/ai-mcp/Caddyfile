@@ -1,0 +1,29 @@
+{
+  email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+  encode zstd gzip
+  log
+
+  basic_auth {
+    {$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
+  }
+
+  respond /health 200
+
+  handle_path /fastmcp-basic/* {
+    header /sse* Access-Control-Allow-Origin "*"
+    header /sse* Access-Control-Allow-Methods "GET, OPTIONS"
+    header /sse* Access-Control-Allow-Headers "Authorization, Content-Type"
+    reverse_proxy fastmcp-basic:8080
+  }
+
+  handle_path /echo/* {
+    reverse_proxy echo-mcp:8080
+  }
+
+  handle_path /n8n/* {
+    reverse_proxy n8n:5678
+  }
+}

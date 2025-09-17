@@ -1,0 +1,54 @@
+name: mcp-lab
+
+networks:
+  mcp:
+    driver: bridge
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - mcp
+
+  fastmcp-basic:
+    build:
+      context: ./servers/fastmcp-basic
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - mcp
+
+  echo-mcp:
+    build:
+      context: ./servers/echo-mcp
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - mcp
+
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    expose:
+      - "5678"
+    networks:
+      - mcp
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  caddy_data:
+  caddy_config:
+  n8n_data:
