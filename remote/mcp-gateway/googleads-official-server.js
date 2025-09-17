@@ -274,13 +274,60 @@ const api = new GoogleAdsAPI(
 // Handle tool execution
 async function executeTool(toolName, args) {
   console.error(`Executing tool: ${toolName}`);
-  
+
+  // Check if we have proper authentication
+  const hasAuth = GOOGLE_ADS_ACCESS_TOKEN && GOOGLE_ADS_CUSTOMER_ID &&
+                  GOOGLE_ADS_CUSTOMER_ID !== "your_google_ads_customer_id_here";
+
   try {
     switch (toolName) {
       case "campaigns-list":
+        if (!hasAuth) {
+          // Return mock data when no authentication
+          return {
+            message: "Returning demo data (configure OAuth for real data)",
+            campaigns: [
+              {
+                id: "campaign-001",
+                name: "Brand Awareness Campaign",
+                status: "ENABLED",
+                budget: 500,
+                impressions: 4500,
+                clicks: 225,
+                ctr: 0.05,
+                avgCpc: 1.20,
+                cost: 270
+              },
+              {
+                id: "campaign-002",
+                name: "Product Launch - Q4",
+                status: "ENABLED",
+                budget: 750,
+                impressions: 3200,
+                clicks: 180,
+                ctr: 0.056,
+                avgCpc: 1.35,
+                cost: 243
+              },
+              {
+                id: "campaign-003",
+                name: "Retargeting - Cart Abandoners",
+                status: "PAUSED",
+                budget: 250,
+                impressions: 2300,
+                clicks: 95,
+                ctr: 0.041,
+                avgCpc: 1.15,
+                cost: 109.25
+              }
+            ]
+          };
+        }
+
+        // Real API call when authenticated
         const query = `
-          SELECT campaign.id, campaign.name, campaign.status, 
-                 campaign_budget.amount_micros, metrics.impressions, 
+          SELECT campaign.id, campaign.name, campaign.status,
+                 campaign_budget.amount_micros, metrics.impressions,
                  metrics.clicks, metrics.cost_micros
           FROM campaign
           WHERE segments.date DURING LAST_30_DAYS
