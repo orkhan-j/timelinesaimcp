@@ -41,6 +41,8 @@ ssh root@$SERVER_IP << 'ENDSSH'
     echo "  → Syncing files from git structure to Docker mount points"
     # IMPORTANT: Docker uses files in root directory, not in remote/mcp-gateway/
     cp remote/mcp-gateway/posthog-official-server.js posthog-official-server.js
+    cp remote/mcp-gateway/googleads-official-server.js googleads-official-server.js
+    cp remote/mcp-gateway/intercom-official-server.js intercom-official-server.js
     cp remote/mcp-gateway/nginx.conf nginx.conf
     cp remote/mcp-gateway/docker-compose.yml docker-compose.yml
     
@@ -52,7 +54,7 @@ ssh root@$SERVER_IP << 'ENDSSH'
     sleep 3
     
     echo "  → Checking container status"
-    docker ps | grep -E "posthog-mcp|nginx-mcp"
+    docker ps | grep -E "posthog-mcp|googleads-mcp|intercom-mcp|nginx-mcp"
 ENDSSH
 
 echo "✅ Step 5: Testing deployment"
