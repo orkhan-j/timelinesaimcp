@@ -36,6 +36,21 @@ services:
       - mcp-network
     restart: unless-stopped
 
+  intercom-mcp:
+    image: node:20-alpine
+    container_name: intercom-mcp
+    working_dir: /app
+    volumes:
+      - ./intercom-official-server.js:/app/server.js
+      - ./.env:/app/.env
+    command: ["node", "server.js"]
+    environment:
+      - INTERCOM_API_TOKEN=${INTERCOM_API_TOKEN}
+      - PORT=8084
+    networks:
+      - mcp-network
+    restart: unless-stopped
+
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -57,6 +72,7 @@ services:
     depends_on:
       - posthog-mcp
       - googleads-mcp
+      - intercom-mcp
     networks:
       - mcp-network
     restart: unless-stopped

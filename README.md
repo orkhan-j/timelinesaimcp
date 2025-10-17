@@ -1,12 +1,13 @@
 # 🚀 Timelines AI MCP Services
 
-Connect Claude Desktop to PostHog analytics and Google Ads through the Model Context Protocol (MCP).
+Connect Claude Desktop to PostHog analytics, Google Ads, and Intercom through the Model Context Protocol (MCP).
 
 ## ✨ What This Does
 
 This enables Claude Desktop to:
 - **PostHog**: Access analytics, events, user data, feature flags, and run queries
 - **Google Ads**: Manage campaigns, view performance, control keywords and budgets
+- **Intercom**: Search conversations, access contacts, view customer support data
 
 ## 🎯 Quick Setup (For Users)
 
@@ -27,6 +28,7 @@ pwd  # Copy this path, you'll need it next
 # Download just the proxy files
 curl -o ~/posthog-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/posthog-local-proxy.js
 curl -o ~/googleads-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/googleads-local-proxy.js
+curl -o ~/intercom-local-proxy.js https://raw.githubusercontent.com/orkhan-j/timelinesaimcp/main/intercom-local-proxy.js
 ```
 
 ### Configure Claude Desktop
@@ -48,6 +50,10 @@ Add this configuration (replace `/path/to/` with your actual path):
     "googleads": {
       "command": "node",
       "args": ["/path/to/timelinesaimcp/googleads-local-proxy.js"]
+    },
+    "intercom": {
+      "command": "node",
+      "args": ["/path/to/timelinesaimcp/intercom-local-proxy.js"]
     }
   }
 }
@@ -64,6 +70,10 @@ Add this configuration (replace `/path/to/` with your actual path):
     "googleads": {
       "command": "node",
       "args": ["/Users/yourname/timelinesaimcp/googleads-local-proxy.js"]
+    },
+    "intercom": {
+      "command": "node",
+      "args": ["/Users/yourname/timelinesaimcp/intercom-local-proxy.js"]
     }
   }
 }
@@ -74,7 +84,7 @@ Add this configuration (replace `/path/to/` with your actual path):
 1. **Completely quit Claude Desktop** (not just close the window)
 2. **Reopen Claude Desktop**
 3. **Look for the 🔌 icon** in the text input area
-4. You should see "posthog" and "googleads" listed
+4. You should see "posthog", "googleads", and "intercom" listed
 
 ## 🎉 Test It Works!
 
@@ -91,6 +101,12 @@ Try these prompts in Claude:
 - "Show campaign performance this week"
 - "Get my Google Ads account info"
 - "What keywords are in my campaigns?"
+
+### Intercom Examples:
+- "Search for open conversations in Intercom"
+- "Find Intercom contacts with email domain example.com"
+- "Get conversation details from Intercom"
+- "Show me recent Intercom contacts"
 
 ## 📊 Available Tools
 
@@ -112,6 +128,16 @@ Try these prompts in Claude:
 | `keywords-list` | View keywords | "What keywords are we bidding on?" |
 | `campaign-pause` | Pause campaigns | "Pause the Brand campaign" |
 | `account-info` | Account details | "Get my Google Ads account info" |
+
+### Intercom MCP (Customer Support)
+| Tool | Description | Example Prompt |
+|------|-------------|----------------|
+| `search` | Universal search | "Find open conversations in Intercom" |
+| `fetch` | Get resource details | "Fetch conversation_123 from Intercom" |
+| `search_conversations` | Search conversations | "Show open email conversations" |
+| `get_conversation` | Get single conversation | "Get Intercom conversation 456" |
+| `search_contacts` | Search contacts | "Find contacts at example.com" |
+| `get_contact` | Get contact details | "Get Intercom contact 789" |
 
 ## 🛠️ Troubleshooting
 
@@ -139,6 +165,8 @@ Your Computer                 Our Server (mcp.timelinesaitech.com)
 │      ↓      │              │  │   PostHog MCP    │   │
 │ Local Proxy │ ── HTTPS ──→ │  ├──────────────────┤   │
 │  (Node.js)  │              │  │ Google Ads MCP   │   │
+│             │              │  ├──────────────────┤   │
+│             │              │  │  Intercom MCP    │   │
 └─────────────┘              │  └──────────────────┘   │
                              └──────────────────────────┘
 ```
@@ -146,6 +174,7 @@ Your Computer                 Our Server (mcp.timelinesaitech.com)
 ## 📚 Documentation
 
 - **[CLIENT-SETUP.md](CLIENT-SETUP.md)** - Detailed setup guide
+- **[INTERCOM_SETUP.md](INTERCOM_SETUP.md)** - Intercom-specific setup guide
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical documentation
 - **[CLAUDE.md](CLAUDE.md)** - Server management (for admins)
 
