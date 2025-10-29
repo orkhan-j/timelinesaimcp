@@ -291,8 +291,8 @@ initializeAPI().catch(console.error);
 async function executeTool(toolName, args) {
   console.error(`Executing tool: ${toolName}`);
 
-  // Check if we have proper authentication
-  const hasAuth = GOOGLE_ADS_ACCESS_TOKEN && GOOGLE_ADS_CUSTOMER_ID &&
+  // Check if we have proper authentication (including refreshed tokens)
+  const hasAuth = (GOOGLE_ADS_ACCESS_TOKEN || api.accessToken) && GOOGLE_ADS_CUSTOMER_ID &&
                   GOOGLE_ADS_CUSTOMER_ID !== "your_google_ads_customer_id_here";
 
   try {
