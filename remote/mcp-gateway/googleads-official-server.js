@@ -51,6 +51,7 @@ class GoogleAdsAPI {
         "developer-token": this.developerToken,
         "Authorization": `Bearer ${this.accessToken}`,
         "Content-Type": "application/json",
+        "login-customer-id": this.customerId,
       },
     };
 
