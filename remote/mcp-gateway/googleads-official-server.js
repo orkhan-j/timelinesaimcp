@@ -271,6 +271,22 @@ const api = new GoogleAdsAPI(
   GOOGLE_ADS_ACCESS_TOKEN
 );
 
+// Auto-refresh access token on startup if missing or expired
+async function initializeAPI() {
+  if (!GOOGLE_ADS_ACCESS_TOKEN && GOOGLE_ADS_REFRESH_TOKEN) {
+    console.log("Access token missing, refreshing from refresh token...");
+    const newToken = await api.refreshAccessToken();
+    if (newToken) {
+      console.log("✓ Access token refreshed successfully");
+    } else {
+      console.error("✗ Failed to refresh access token");
+    }
+  }
+}
+
+// Call initialization
+initializeAPI().catch(console.error);
+
 // Handle tool execution
 async function executeTool(toolName, args) {
   console.error(`Executing tool: ${toolName}`);
