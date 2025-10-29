@@ -40,7 +40,7 @@ class GoogleAdsAPI {
     this.customerId = customerId;
     this.developerToken = developerToken;
     this.accessToken = accessToken;
-    this.baseUrl = "https://googleads.googleapis.com/v14";
+    this.baseUrl = "https://googleads.googleapis.com/v17";
   }
 
   async makeRequest(endpoint, method = "GET", data = null) {
@@ -349,7 +349,7 @@ async function executeTool(toolName, args) {
           WHERE segments.date DURING LAST_30_DAYS
         `;
         return await api.makeRequest(
-          `/customers/${GOOGLE_ADS_CUSTOMER_ID}/googleAds:searchStream`,
+          `/customers/${GOOGLE_ADS_CUSTOMER_ID}/googleAds:search`,
           "POST",
           { query }
         );
