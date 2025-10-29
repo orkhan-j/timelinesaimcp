@@ -40,11 +40,17 @@ class GoogleAdsAPI {
     this.customerId = customerId;
     this.developerToken = developerToken;
     this.accessToken = accessToken;
-    this.baseUrl = "https://googleads.googleapis.com/v17";
+    this.baseUrl = "https://googleads.googleapis.com/v20";
   }
 
   async makeRequest(endpoint, method = "GET", data = null) {
     const url = `${this.baseUrl}${endpoint}`;
+
+    // Log what token we're using
+    console.error(`API Request to: ${url}`);
+    console.error(`Access Token: ${this.accessToken ? this.accessToken.substring(0, 20) + '...' : 'MISSING'}`);
+    console.error(`Customer ID: ${this.customerId}`);
+
     const options = {
       method,
       headers: {
@@ -61,6 +67,7 @@ class GoogleAdsAPI {
 
     try {
       const response = await makeRequest(url, options);
+      console.error(`API Response received successfully`);
       return response;
     } catch (error) {
       console.error("Google Ads API Error:", error);
