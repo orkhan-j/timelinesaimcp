@@ -4,12 +4,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
+# Environment variables - NEVER commit these!
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+._.env
+*/.env
+*/._.env
 
 # Build outputs
 dist/
@@ -57,6 +60,15 @@ temp/
 
 # Yarn Integrity file
 .yarn-integrity
+
+# SSL/TLS Certificates and Keys - NEVER commit these!
+*.key
+*.pem
+*.crt
+*.cert
+ssl/
+certbot/
+traefik-certs/
 
 # Local server files
 # remote/
