@@ -2,6 +2,8 @@
 
 Connect Claude Desktop to PostHog analytics, Google Ads, and Intercom through the Model Context Protocol (MCP).
 
+> **🔓 Public Repository**: This repository is publicly accessible. All API keys and credentials are stored securely on our server, not in this codebase. See [SECURITY_SETUP.md](SECURITY_SETUP.md) for details.
+
 ## ✨ What This Does
 
 This enables Claude Desktop to:
@@ -173,17 +175,26 @@ Your Computer                 Our Server (mcp.timelinesaitech.com)
 
 ## 📚 Documentation
 
+### For Users:
+- **[WINDOWS_SETUP_GUIDE.md](WINDOWS_SETUP_GUIDE.md)** - Windows user guide
 - **[CLIENT-SETUP.md](CLIENT-SETUP.md)** - Detailed setup guide
-- **[INTERCOM_SETUP.md](INTERCOM_SETUP.md)** - Intercom-specific setup guide
+- **[INTERCOM_SETUP.md](INTERCOM_SETUP.md)** - Intercom-specific setup
+
+### For Developers/Admins:
+- **[SECURITY_SETUP.md](SECURITY_SETUP.md)** - Public repo security guidelines
+- **[CLAUDE.md](CLAUDE.md)** - Server deployment and management
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical documentation
-- **[CLAUDE.md](CLAUDE.md)** - Server management (for admins)
 
 ## 🔐 Security
 
-- ✅ No API keys stored on your computer
+- ✅ **No API keys in this public repository**
+- ✅ **No API keys stored on your computer**
 - ✅ All connections use HTTPS encryption
-- ✅ Server handles all authentication
+- ✅ Server handles all authentication securely
+- ✅ Credentials only stored on remote server
 - ✅ Read-only access by default
+
+See [SECURITY_SETUP.md](SECURITY_SETUP.md) for full security documentation.
 
 ## 🤝 Contributing
 
