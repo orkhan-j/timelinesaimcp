@@ -43,7 +43,7 @@ class GoogleAdsAPI {
     this.baseUrl = "https://googleads.googleapis.com/v20";
   }
 
-  async makeRequest(endpoint, method = "GET", data = null) {
+  async makeRequest(endpoint, method = "GET", data = null, retryCount = 0) {
     const url = `${this.baseUrl}${endpoint}`;
 
     // Log what token we're using
@@ -67,10 +67,39 @@ class GoogleAdsAPI {
 
     try {
       const response = await makeRequest(url, options);
+
+      // Check if response contains authentication error
+      if (response.error && (response.error.code === 401 || response.error.status === "UNAUTHENTICATED")) {
+        console.error("⚠️  Authentication error detected, attempting token refresh...");
+
+        // Try refreshing token if we haven't already retried
+        if (retryCount === 0) {
+          const newToken = await this.refreshAccessToken();
+          if (newToken) {
+            console.log("✓ Token refreshed, retrying request...");
+            // Retry the request with new token
+            return this.makeRequest(endpoint, method, data, retryCount + 1);
+          }
+        }
+
+        throw new Error("Authentication failed: " + JSON.stringify(response.error));
+      }
+
       console.error(`API Response received successfully`);
       return response;
     } catch (error) {
       console.error("Google Ads API Error:", error);
+
+      // If it's a 401 and we haven't retried yet, refresh token and retry
+      if (retryCount === 0 && error.message && error.message.includes("401")) {
+        console.error("⚠️  401 error detected, attempting token refresh...");
+        const newToken = await this.refreshAccessToken();
+        if (newToken) {
+          console.log("✓ Token refreshed, retrying request...");
+          return this.makeRequest(endpoint, method, data, retryCount + 1);
+        }
+      }
+
       throw error;
     }
   }
@@ -279,6 +308,9 @@ const api = new GoogleAdsAPI(
   GOOGLE_ADS_ACCESS_TOKEN
 );
 
+// Global token management
+let tokenExpiryTime = null;
+
 // Auto-refresh access token on startup if missing or expired
 async function initializeAPI() {
   if (!GOOGLE_ADS_ACCESS_TOKEN && GOOGLE_ADS_REFRESH_TOKEN) {
@@ -286,11 +318,50 @@ async function initializeAPI() {
     const newToken = await api.refreshAccessToken();
     if (newToken) {
       console.log("✓ Access token refreshed successfully");
+      // Tokens expire in 1 hour, track expiry
+      tokenExpiryTime = Date.now() + (55 * 60 * 1000); // Refresh after 55 minutes
     } else {
       console.error("✗ Failed to refresh access token");
     }
+  } else if (GOOGLE_ADS_ACCESS_TOKEN) {
+    // If token exists, assume it's fresh on startup
+    tokenExpiryTime = Date.now() + (55 * 60 * 1000);
   }
 }
+
+// Proactive token refresh - runs every 50 minutes
+async function refreshTokenIfNeeded() {
+  if (!GOOGLE_ADS_REFRESH_TOKEN) return;
+
+  const now = Date.now();
+
+  // Refresh if no expiry set or if we're within 5 minutes of expiry
+  if (!tokenExpiryTime || now >= tokenExpiryTime) {
+    console.log("⏰ Proactively refreshing access token...");
+    try {
+      const newToken = await api.refreshAccessToken();
+      if (newToken) {
+        console.log("✓ Access token refreshed successfully");
+        tokenExpiryTime = Date.now() + (55 * 60 * 1000);
+        return true;
+      } else {
+        console.error("✗ Failed to refresh access token");
+        return false;
+      }
+    } catch (error) {
+      console.error("✗ Token refresh error:", error);
+      return false;
+    }
+  }
+  return true;
+}
+
+// Auto-refresh every 50 minutes
+setInterval(() => {
+  refreshTokenIfNeeded().catch(error => {
+    console.error("Scheduled token refresh failed:", error);
+  });
+}, 50 * 60 * 1000); // 50 minutes
 
 // Call initialization
 initializeAPI().catch(console.error);
