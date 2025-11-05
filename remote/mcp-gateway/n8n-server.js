@@ -17,7 +17,17 @@ console.log("N8N API Key:", N8N_API_KEY ? "✓ Set" : "✗ Missing");
 console.log("Port:", PORT);
 
 // Start mcp-remote server
-const server = spawn("npx", ["--yes", "mcp-remote@latest", "--stdio", "npx", "--yes", "n8n-mcp"], {
+// mcp-remote will spawn n8n-mcp and bridge it to HTTP/SSE
+const server = spawn("npx", [
+  "--yes",
+  "mcp-remote@latest",
+  "server",
+  "--port",
+  PORT.toString(),
+  "npx",
+  "--yes",
+  "n8n-mcp"
+], {
   env: {
     ...process.env,
     MCP_MODE: "stdio",
