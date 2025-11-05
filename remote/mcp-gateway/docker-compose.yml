@@ -51,6 +51,20 @@ services:
       - mcp-network
     restart: unless-stopped
 
+  n8n-mcp:
+    image: ghcr.io/czlonkowski/n8n-mcp:latest
+    container_name: n8n-mcp
+    environment:
+      - N8N_API_URL=${N8N_API_URL}
+      - N8N_API_KEY=${N8N_API_KEY}
+      - PORT=8085
+      - LOG_LEVEL=error
+      - DISABLE_CONSOLE_OUTPUT=true
+      - WEBHOOK_SECURITY_MODE=moderate
+    networks:
+      - mcp-network
+    restart: unless-stopped
+
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -73,6 +87,7 @@ services:
       - posthog-mcp
       - googleads-mcp
       - intercom-mcp
+      - n8n-mcp
     networks:
       - mcp-network
     restart: unless-stopped
