@@ -56,13 +56,14 @@ services:
     container_name: n8n-mcp
     working_dir: /app
     volumes:
-      - ./n8n-official-server.js:/app/server.js
+      - ./n8n-server.js:/app/server.js
       - ./.env:/app/.env
     command: ["node", "server.js"]
     environment:
       - N8N_API_URL=${N8N_API_URL}
       - N8N_API_KEY=${N8N_API_KEY}
       - PORT=8085
+      - N8N_MCP_TELEMETRY_DISABLED=true
       - LOG_LEVEL=error
       - DISABLE_CONSOLE_OUTPUT=true
       - WEBHOOK_SECURITY_MODE=moderate
