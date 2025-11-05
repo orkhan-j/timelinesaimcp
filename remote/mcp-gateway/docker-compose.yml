@@ -52,8 +52,13 @@ services:
     restart: unless-stopped
 
   n8n-mcp:
-    image: ghcr.io/czlonkowski/n8n-mcp:latest
+    image: node:20-alpine
     container_name: n8n-mcp
+    working_dir: /app
+    volumes:
+      - ./n8n-official-server.js:/app/server.js
+      - ./.env:/app/.env
+    command: ["node", "server.js"]
     environment:
       - N8N_API_URL=${N8N_API_URL}
       - N8N_API_KEY=${N8N_API_KEY}
