@@ -9,7 +9,7 @@
 
 ## What Was Exposed
 
-**Exposed Token**: `dG9rOjQyZjA5MmVjXzI2ZTFfNDk5NV9hMzkzXzUxMGExMWU4Y2U4NDoxOjA=`
+**Exposed Token**: `dG9rOjQyZjA5***REDACTED***`
 
 **Files Affected**:
 - INTERCOM_SETUP.md (line 52)
@@ -26,7 +26,7 @@
 1. Go to [Intercom Developer Hub](https://app.intercom.com/a/apps/_/developer-hub)
 2. Navigate to **Authentication** section
 3. Click on **Access Tokens**
-4. Find and **DELETE/REVOKE** any tokens that start with `dG9rOjQyZjA5MmVj...`
+4. Find and **DELETE/REVOKE** the exposed access token
 5. Generate a **NEW** access token
 
 ### 2. 🔄 UPDATE SERVER WITH NEW TOKEN
@@ -62,7 +62,7 @@ curl https://mcp.timelinesaitech.com/intercom/health
 
 ### Changes Made
 ```diff
-- INTERCOM_API_TOKEN=dG9rOjQyZjA5MmVjXzI2ZTFfNDk5NV9hMzkzXzUxMGExMWU4Y2U4NDoxOjA=
+- INTERCOM_API_TOKEN=***EXPOSED_TOKEN***
 + INTERCOM_API_TOKEN=your_intercom_token_here
 ```
 
@@ -87,8 +87,7 @@ git clone --mirror https://github.com/orkhan-j/timelinesaimcp.git
 # Remove the sensitive data
 bfg --replace-text passwords.txt timelinesaimcp.git
 
-# Create passwords.txt with:
-dG9rOjQyZjA5MmVjXzI2ZTFfNDk5NV9hMzkzXzUxMGExMWU4Y2U4NDoxOjA=
+# Create passwords.txt with the exposed token value
 
 # Clean up
 cd timelinesaimcp.git
@@ -111,7 +110,7 @@ cp -r "Timelines MCP" "Timelines MCP.backup"
 
 # Remove sensitive data
 cd "Timelines MCP"
-git filter-repo --replace-text <(echo "dG9rOjQyZjA5MmVjXzI2ZTFfNDk5NV9hMzkzXzUxMGExMWU4Y2U4NDoxOjA===>***REMOVED***")
+git filter-repo --replace-text <(echo "EXPOSED_TOKEN_VALUE_HERE==>***REMOVED***")
 
 # Force push (CAUTION!)
 git push --force --all
