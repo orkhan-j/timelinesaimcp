@@ -48,11 +48,11 @@ ssh root@213.182.213.232
 cd /opt/mcp-gateway
 nano .env
 
-# Add this line:
-INTERCOM_API_TOKEN=***REMOVED***
+# Add this line with YOUR actual token:
+INTERCOM_API_TOKEN=your_intercom_token_here
 ```
 
-Replace with your actual token from Intercom.
+**⚠️ IMPORTANT**: Replace `your_intercom_token_here` with your actual token from Intercom Developer Hub.
 
 ## 💻 Client Setup (Claude Desktop)
 
