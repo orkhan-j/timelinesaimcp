@@ -1,7 +1,7 @@
 const http = require("http");
 const { spawn } = require("child_process");
 
-const N8N_API_URL = process.env.N8N_API_KEY;
+const N8N_API_URL = process.env.N8N_API_URL;
 const N8N_API_KEY = process.env.N8N_API_KEY;
 const PORT = process.env.PORT || 8085;
 
